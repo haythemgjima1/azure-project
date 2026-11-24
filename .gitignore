@@ -1,0 +1,18 @@
+# Terraform local state and downloaded providers
+terraform.tfvars
+*.tfstate*
+.terraform/
+crash.log
+crash.*.log
+
+# SSH keys and local credentials
+*.pem
+*.key
+keys/
+id_*
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/

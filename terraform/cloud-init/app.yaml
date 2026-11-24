@@ -1,0 +1,48 @@
+#cloud-config
+package_update: true
+packages:
+  - git
+  - netcat-openbsd
+  - python3-venv
+  - python3-pip
+write_files:
+  - path: /etc/instruments.env
+    owner: root:root
+    permissions: "0600"
+    content: |
+      DB_HOST=10.3.1.4
+      DB_PORT=3306
+      DB_NAME=university_assignments
+      DB_USER=appuser
+      DB_PASSWORD=${db_password}
+  - path: /etc/systemd/system/university-api.service
+    owner: root:root
+    permissions: "0644"
+    content: |
+      [Unit]
+      Description=University assignment CRUD API
+      After=network-online.target
+      Wants=network-online.target
+
+      [Service]
+      Type=simple
+      User=universityapp
+      Group=universityapp
+      WorkingDirectory=/opt/university-backend
+      EnvironmentFile=/etc/instruments.env
+      ExecStart=/opt/university-backend/venv/bin/gunicorn --workers 2 --bind 0.0.0.0:5000 app:app
+      Restart=always
+      RestartSec=5
+
+      [Install]
+      WantedBy=multi-user.target
+runcmd:
+  - git clone --depth 1 '${repo_url}' /opt/university-source
+  - useradd --system --home-dir /opt/university-backend --shell /usr/sbin/nologin universityapp
+  - install -d -o universityapp -g universityapp /opt/university-backend
+  - cp -a /opt/university-source/${app_subdir}/backend/. /opt/university-backend/
+  - python3 -m venv /opt/university-backend/venv
+  - /opt/university-backend/venv/bin/pip install --no-cache-dir -r /opt/university-backend/requirements.txt
+  - chown -R universityapp:universityapp /opt/university-backend
+  - systemctl daemon-reload
+  - systemctl enable --now university-api

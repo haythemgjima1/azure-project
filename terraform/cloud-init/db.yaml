@@ -1,0 +1,36 @@
+#cloud-config
+package_update: true
+packages:
+  - mysql-server
+write_files:
+  - path: /root/init-university.sql
+    owner: root:root
+    permissions: "0600"
+    content: |
+      CREATE DATABASE IF NOT EXISTS university_assignments CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+      CREATE USER IF NOT EXISTS 'appuser'@'10.2.1.%' IDENTIFIED BY '${db_password}';
+      ALTER USER 'appuser'@'10.2.1.%' IDENTIFIED BY '${db_password}';
+      GRANT SELECT, INSERT, UPDATE, DELETE ON university_assignments.* TO 'appuser'@'10.2.1.%';
+      USE university_assignments;
+      CREATE TABLE IF NOT EXISTS assignments (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        course_code VARCHAR(20) NOT NULL,
+        title VARCHAR(150) NOT NULL,
+        description TEXT NOT NULL,
+        due_date DATE NOT NULL,
+        status VARCHAR(32) NOT NULL,
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+      );
+      INSERT INTO assignments (course_code, title, description, due_date, status) VALUES
+        ('CS101', 'Algorithm analysis', 'Compare the complexity of two sorting algorithms.', '2027-01-15', 'In Progress'),
+        ('DB202', 'Relational model', 'Design a normalized schema for a library system.', '2027-01-18', 'Not Started'),
+        ('NW210', 'Network lab report', 'Document subnetting and routing observations.', '2027-01-20', 'Submitted'),
+        ('SE301', 'Requirements study', 'Write user stories and acceptance criteria.', '2027-01-24', 'In Progress'),
+        ('OS220', 'Process scheduling', 'Simulate round-robin scheduling and report results.', '2027-01-27', 'Not Started'),
+        ('AI310', 'Search strategies', 'Implement and compare informed search methods.', '2027-01-30', 'Not Started');
+runcmd:
+  - sed -i 's/^[#[:space:]]*bind-address[[:space:]]*=.*/bind-address = 10.3.1.4/' /etc/mysql/mysql.conf.d/mysqld.cnf
+  - systemctl enable --now mysql
+  - systemctl restart mysql
+  - mysql < /root/init-university.sql
+  - rm -f /root/init-university.sql
