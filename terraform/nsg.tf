@@ -96,7 +96,8 @@ resource "azurerm_network_security_group" "tier" {
       access                     = security_rule.value.access
       protocol                   = security_rule.value.protocol
       source_port_range          = "*"
-      destination_port_ranges    = security_rule.value.destination_ports
+      destination_port_range     = length(security_rule.value.destination_ports) == 1 ? security_rule.value.destination_ports[0] : null
+      destination_port_ranges    = length(security_rule.value.destination_ports) > 1 ? security_rule.value.destination_ports : null
       source_address_prefix      = security_rule.value.source_prefix
       destination_address_prefix = "*"
     }
