@@ -24,7 +24,7 @@ The browser loads the static page from Nginx. Nginx proxies same-origin `/api/` 
 | App | `vnet-app` | `10.2.0.0/16` | `subnet-app` | `10.2.1.0/24` | `vm-app` / `10.2.1.4` | None; NAT gateway provides outbound-only SNAT |
 | Database | `vnet-db` | `10.3.0.0/16` | `subnet-db` | `10.3.1.0/24` | `vm-db` / `10.3.1.4` | None; NAT gateway provides outbound-only SNAT |
 
-All VMs use Ubuntu Server 22.04 LTS Gen2, `azureuser`, and public-key SSH authentication only. The app and database use their own Standard NAT gateway and static Standard public IP. NAT gateways are subnet-scoped and do not permit unsolicited inbound connections.
+All VMs use Ubuntu Server 22.04 LTS Gen1, `azureuser`, and public-key SSH authentication only. The `Standard_A1_v2` size is used because it cannot boot Gen2 images. The app and database use their own Standard NAT gateway and static Standard public IP. NAT gateways are subnet-scoped and do not permit unsolicited inbound connections.
 
 ## NSG inbound policy
 

@@ -16,7 +16,7 @@ variable "students" {
 variable "location" {
   description = "Azure region for all resources."
   type        = string
-  default     = "francecentral"
+  default     = "italynorth"
 }
 
 variable "admin_ip_cidr" {
@@ -37,13 +37,13 @@ variable "ssh_public_key_path" {
 variable "vm_size" {
   description = "VM size used by app and database tiers."
   type        = string
-  default     = "Standard_B1s"
+  default     = "Standard_A1_v2"
 }
 
 variable "web_vm_size" {
   description = "VM size used by the public web tier."
   type        = string
-  default     = "Standard_B1s"
+  default     = "Standard_A1_v2"
 }
 
 variable "db_password" {
