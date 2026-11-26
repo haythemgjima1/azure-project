@@ -30,3 +30,13 @@ output "ssh_private_key_path" {
   description = "Expanded private key path used by verify.sh."
   value       = local.ssh_private_key_path
 }
+
+output "mysql_paas_fqdn" {
+  description = "Private FQDN of the Azure Database for MySQL Flexible Server."
+  value       = azurerm_mysql_flexible_server.main.fqdn
+}
+
+output "mysql_paas_private_ip" {
+  description = "Private Endpoint IP of Azure Database for MySQL inside subnet-db."
+  value       = azurerm_private_endpoint.mysql.private_service_connection[0].private_ip_address
+}

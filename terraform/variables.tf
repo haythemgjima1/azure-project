@@ -16,7 +16,7 @@ variable "students" {
 variable "location" {
   description = "Azure region for all resources."
   type        = string
-  default     = "italynorth"
+  default     = "germanywestcentral"
 }
 
 variable "admin_ip_cidr" {

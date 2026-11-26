@@ -1,3 +1,4 @@
+import logging
 import os
 from contextlib import contextmanager
 from datetime import date
@@ -7,23 +8,54 @@ from flask import Flask, jsonify, request
 from werkzeug.exceptions import HTTPException
 
 app = Flask(__name__)
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 STATUSES = {"Not Started", "In Progress", "Submitted"}
 FIELDS = ("course_code", "title", "description", "due_date", "status")
 
+# ---------------------------------------------------------------------------
+# Dual-database failover
+# Primary:  DB_HOST (vm-db, 10.3.1.4)
+# Fallback: DB_HOST_FALLBACK (Azure DB for MySQL private endpoint, 10.3.1.5)
+# If the primary is unreachable the app transparently switches to the fallback.
+# Set DB_HOST_FALLBACK=none to disable the fallback.
+# ---------------------------------------------------------------------------
+
+def _connect(host, port, user, password, database):
+    return pymysql.connect(
+        host=host,
+        port=int(port),
+        user=user,
+        password=password,
+        database=database,
+        charset="utf8mb4",
+        cursorclass=pymysql.cursors.DictCursor,
+        connect_timeout=4,
+    )
+
 
 @contextmanager
 def database_connection():
-    connection = pymysql.connect(
-        host=os.environ["DB_HOST"],
-        port=int(os.environ.get("DB_PORT", "3306")),
-        user=os.environ["DB_USER"],
-        password=os.environ["DB_PASSWORD"],
-        database=os.environ["DB_NAME"],
-        charset="utf8mb4",
-        cursorclass=pymysql.cursors.DictCursor,
-        connect_timeout=5,
-    )
+    host     = os.environ["DB_HOST"]
+    fallback = os.environ.get("DB_HOST_FALLBACK", "")
+    port     = os.environ.get("DB_PORT", "3306")
+    user     = os.environ["DB_USER"]
+    password = os.environ["DB_PASSWORD"]
+    database = os.environ["DB_NAME"]
+
+    connection = None
+    try:
+        connection = _connect(host, port, user, password, database)
+        logger.info("DB connected to primary %s", host)
+    except Exception as primary_err:
+        logger.warning("Primary DB %s unreachable (%s); trying fallback.", host, primary_err)
+        if fallback and fallback.lower() != "none":
+            connection = _connect(fallback, port, user, password, database)
+            logger.info("DB connected to fallback %s", fallback)
+        else:
+            raise
+
     try:
         yield connection
     finally:

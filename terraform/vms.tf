@@ -4,6 +4,12 @@ resource "azurerm_network_interface" "tier" {
   location            = azurerm_resource_group.main.location
   resource_group_name = azurerm_resource_group.main.name
 
+  depends_on = [
+    azurerm_virtual_network_peering.tier,
+    azurerm_subnet_network_security_group_association.tier,
+    azurerm_subnet_nat_gateway_association.private
+  ]
+
   ip_configuration {
     name                          = "internal"
     subnet_id                     = azurerm_subnet.tier[each.key].id
@@ -37,7 +43,7 @@ resource "azurerm_linux_virtual_machine" "tier" {
   source_image_reference {
     publisher = "Canonical"
     offer     = "0001-com-ubuntu-server-jammy"
-    sku       = "22_04-lts"
+    sku       = "22_04-lts-gen2"
     version   = "latest"
   }
 

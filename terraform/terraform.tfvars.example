@@ -1,6 +1,6 @@
 subscription_id    = "00000000-0000-0000-0000-000000000000"
 students           = "nom1-nom2"
-location           = "italynorth"
+location           = "germanywestcentral"
 admin_ip_cidr      = "203.0.113.10/32" # Replace with your current public IPv4 /32.
 ssh_public_key_path = "~/.ssh/id_ed25519.pub"
 vm_size            = "Standard_A1_v2"

@@ -11,6 +11,7 @@ write_files:
     permissions: "0600"
     content: |
       DB_HOST=10.3.1.4
+      DB_HOST_FALLBACK=10.3.1.5
       DB_PORT=3306
       DB_NAME=university_assignments
       DB_USER=appuser
@@ -42,7 +43,7 @@ runcmd:
   - install -d -o universityapp -g universityapp /opt/university-backend
   - cp -a /opt/university-source/${app_subdir}/backend/. /opt/university-backend/
   - python3 -m venv /opt/university-backend/venv
-  - /opt/university-backend/venv/bin/pip install --no-cache-dir -r /opt/university-backend/requirements.txt
+  - /opt/university-backend/venv/bin/pip install --no-cache-dir -r /opt/university-backend/requirements.txt cryptography
   - chown -R universityapp:universityapp /opt/university-backend
   - systemctl daemon-reload
   - systemctl enable --now university-api

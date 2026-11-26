@@ -100,6 +100,8 @@ resource "azurerm_subnet_nat_gateway_association" "private" {
   for_each       = local.private_tiers
   subnet_id      = azurerm_subnet.tier[each.key].id
   nat_gateway_id = azurerm_nat_gateway.private[each.key].id
+
+  depends_on = [azurerm_subnet_network_security_group_association.tier]
 }
 
 resource "azurerm_virtual_network_peering" "tier" {
@@ -112,4 +114,9 @@ resource "azurerm_virtual_network_peering" "tier" {
   allow_forwarded_traffic      = false
   allow_gateway_transit        = false
   use_remote_gateways          = false
+
+  depends_on = [
+    azurerm_subnet_network_security_group_association.tier,
+    azurerm_subnet_nat_gateway_association.private
+  ]
 }

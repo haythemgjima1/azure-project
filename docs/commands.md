@@ -12,7 +12,7 @@ az account show --output table
 ssh-keygen -t ed25519 -C "university-assignment-lab" -f "$HOME/.ssh/id_ed25519"
 ```
 
-Use the public IPv4 address of the machine that will SSH to Azure as `admin_ip_cidr`, with `/32` appended. Ensure your subscription has quota and regional capacity for three `Standard_A1_v2` VMs and two NAT gateways in `italynorth`.
+Use the public IPv4 address of the machine that will SSH to Azure as `admin_ip_cidr`, with `/32` appended. Ensure your subscription has quota and regional capacity for three `Standard_D2s_v6` VMs (or an available size in your region) and two NAT gateways in `germanywestcentral`.
 
 ## 2. Publish the project repository
 

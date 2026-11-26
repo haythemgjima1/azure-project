@@ -4,8 +4,8 @@ Terraform deploys a three-tier university assignment CRUD website to three Ubunt
 
 ## Architecture
 
-- Region: `italynorth` by default; change `location` in `terraform.tfvars` if needed.
-- VM size: `Standard_A1_v2` with the Ubuntu 22.04 Gen1 image SKU for compatibility in this subscription/region.
+- Region: `germanywestcentral` by default; change `location` in `terraform.tfvars` if needed.
+- VM size: `Standard_D2s_v6` with the Ubuntu 22.04 Gen2 image SKU (`22_04-lts-gen2`, configurable in `terraform.tfvars`).
 - Three VNets use `10.1.0.0/16`, `10.2.0.0/16`, and `10.3.0.0/16`.
 - Only web↔app and app↔db are peered. No web↔db peering exists.
 - Only `vm-web` has a VM public IP. The app and DB subnets use separate NAT gateways for outbound updates and Git clone access.
